@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>運算思維與程式基礎</title>
+<style>
+:root{--primary:#4f46e5;--primary-light:#818cf8;--secondary:#06b6d4;--accent:#f59e0b;--success:#10b981;--danger:#ef4444;--bg:#f8fafc;--card:#ffffff;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI','Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);}
+header{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;padding:2rem 1.5rem 3rem;text-align:center;}
+header h1{font-size:1.8rem;font-weight:800;margin-bottom:.4rem;}
+header p{font-size:1rem;opacity:.85;}
+#progress-bar-wrap{background:#c7d2fe;height:8px;border-radius:4px;max-width:600px;margin:1.2rem auto 0;}
+#progress-bar{height:8px;border-radius:4px;background:#fff;width:0%;transition:width .4s;}
+nav{display:flex;overflow-x:auto;gap:.5rem;padding:.8rem 1rem;background:#fff;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:100;justify-content:center;}
+nav button{padding:.5rem 1.1rem;border:2px solid var(--border);border-radius:2rem;background:#fff;cursor:pointer;font-size:.85rem;white-space:nowrap;transition:all .25s;color:var(--muted);}
+nav button.active,nav button:hover{background:var(--primary);color:#fff;border-color:var(--primary);}
+nav button.done{border-color:var(--success);color:var(--success);}
+nav button.done.active{background:var(--success);color:#fff;}
+main{max-width:860px;margin:2rem auto;padding:0 1rem 4rem;}
+.section{display:none;animation:fadeIn .35s ease;}
+.section.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--card);border-radius:1rem;padding:1.5rem 1.8rem;margin-bottom:1.4rem;box-shadow:0 2px 12px rgba(0,0,0,.07);border-left:5px solid var(--primary);}
+.card.cyan{border-color:var(--secondary);}
+.card.amber{border-color:var(--accent);}
+.card.green{border-color:var(--success);}
+.card h2{font-size:1.2rem;margin-bottom:.7rem;color:var(--primary);}
+.card.cyan h2{color:var(--secondary);}
+.card.amber h2{color:var(--accent);}
+.card.green h2{color:var(--success);}
+.card p,.card li{line-height:1.7;margin-bottom:.4rem;font-size:.95rem;}
+.card ul,.card ol{padding-left:1.4rem;}
+.quote{background:#eef2ff;border-left:4px solid var(--primary-light);padding:.8rem 1.2rem;border-radius:.5rem;font-style:italic;margin:.8rem 0;font-size:.93rem;color:#3730a3;}
+.tag{display:inline-block;padding:.2rem .7rem;border-radius:1rem;font-size:.78rem;font-weight:700;margin:.2rem .1rem;}
+.tag-blue{background:#dbeafe;color:#1d4ed8;}
+.tag-green{background:#d1fae5;color:#065f46;}
+.tag-amber{background:#fef3c7;color:#92400e;}
+.tag-purple{background:#ede9fe;color:#5b21b6;}
+.ct-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin:1rem 0;}
+.ct-card{border-radius:.8rem;padding:1.1rem;text-align:center;cursor:pointer;transition:transform .2s,box-shadow .2s;border:2px solid transparent;}
+.ct-card:hover{transform:translateY(-4px);box-shadow:0 6px 20px rgba(0,0,0,.12);}
+.ct-card .icon{font-size:2rem;margin-bottom:.5rem;}
+.ct-card h3{font-size:.95rem;font-weight:700;margin-bottom:.3rem;}
+.ct-card p{font-size:.8rem;color:#475569;display:none;}
+.ct-card.expanded p{display:block;}
+.ct-card.c1{background:#ede9fe;border-color:#8b5cf6;}
+.ct-card.c2{background:#dbeafe;border-color:#3b82f6;}
+.ct-card.c3{background:#d1fae5;border-color:#10b981;}
+.ct-card.c4{background:#fef9c3;border-color:#eab308;}
+.domain-table{width:100%;border-collapse:collapse;font-size:.83rem;margin-top:.8rem;}
+.domain-table th{background:var(--primary);color:#fff;padding:.5rem .6rem;text-align:left;}
+.domain-table td{padding:.5rem .6rem;border-bottom:1px solid var(--border);}
+.domain-table tr:hover td{background:#f1f5f9;}
+.sort-list{list-style:none;padding:0;}
+.sort-item{padding:.65rem 1rem;background:#fff;border:2px solid var(--border);border-radius:.6rem;margin-bottom:.5rem;cursor:grab;display:flex;align-items:center;gap:.7rem;font-size:.9rem;transition:box-shadow .2s;}
+.sort-item:active{cursor:grabbing;box-shadow:0 4px 16px rgba(0,0,0,.15);}
+.sort-check-btn{padding:.55rem 1.4rem;background:var(--accent);color:#fff;border:none;border-radius:2rem;cursor:pointer;font-weight:600;font-size:.9rem;margin-top:.7rem;}
+.bool-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.6rem;flex-wrap:wrap;}
+.bool-input{width:60px;text-align:center;padding:.3rem;border:2px solid var(--border);border-radius:.4rem;font-size:.9rem;}
+.bool-op{font-weight:700;color:var(--primary);min-width:30px;}
+.bool-ans{padding:.3rem .7rem;background:#f1f5f9;border-radius:.4rem;font-size:.9rem;min-width:80px;text-align:center;}
+.bool-check-btn{padding:.4rem 1rem;background:var(--secondary);color:#fff;border:none;border-radius:1rem;cursor:pointer;font-size:.85rem;}
+.flow-palette{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.6rem;}
+.palette-item{background:#fff;border:2px solid var(--primary);border-radius:.4rem;padding:.3rem .7rem;font-size:.8rem;cursor:pointer;transition:all .2s;}
+.palette-item:hover{background:var(--primary);color:#fff;}
+.palette-item.oval{border-radius:2rem;}
+.palette-item.diamond{background:#fef9c3;border-color:#eab308;}
+.palette-item.diamond:hover{background:#eab308;color:#fff;}
+.palette-item.rect{background:#dbeafe;border-color:#3b82f6;}
+.palette-item.rect:hover{background:#3b82f6;color:#fff;}
+.palette-item.parallelogram{background:#d1fae5;border-color:#10b981;}
+.palette-item.parallelogram:hover{background:#10b981;color:#fff;}
+#flow-canvas{background:#f8fafc;border:2px dashed var(--border);border-radius:.8rem;min-height:180px;padding:1rem;display:flex;flex-wrap:wrap;gap:.6rem;align-items:flex-start;margin:.8rem 0;}
+#pseudo-area{font-family:'Courier New',monospace;font-size:.88rem;background:#1e293b;color:#e2e8f0;border-radius:.8rem;padding:1rem 1.2rem;min-height:160px;line-height:1.8;white-space:pre-wrap;margin:.8rem 0;border:none;width:100%;resize:vertical;}
+.quiz-wrap{margin-top:.5rem;}
+.question{font-weight:700;margin-bottom:.8rem;font-size:1rem;}
+.options{display:flex;flex-direction:column;gap:.5rem;}
+.opt-btn{padding:.65rem 1rem;border-radius:.6rem;border:2px solid var(--border);background:#fff;cursor:pointer;text-align:left;font-size:.9rem;transition:all .2s;}
+.opt-btn:hover{border-color:var(--primary);background:#eef2ff;}
+.opt-btn.correct{background:#d1fae5;border-color:var(--success);color:#065f46;}
+.opt-btn.wrong{background:#fee2e2;border-color:var(--danger);color:#7f1d1d;}
+.feedback{margin-top:.8rem;padding:.7rem 1rem;border-radius:.6rem;font-size:.9rem;display:none;}
+.feedback.show{display:block;}
+.feedback.ok{background:#d1fae5;color:#065f46;}
+.feedback.bad{background:#fee2e2;color:#7f1d1d;}
+.quiz-nav{display:flex;gap:.8rem;margin-top:1rem;}
+.btn-nav{padding:.65rem 1.8rem;border-radius:2rem;border:none;cursor:pointer;font-size:.92rem;font-weight:600;transition:all .2s;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:#4338ca;}
+.btn-secondary{background:var(--border);color:var(--text);}
+.btn-secondary:hover{background:#cbd5e1;}
+.sec-banner{background:linear-gradient(90deg,var(--primary),var(--secondary));color:#fff;padding:1rem 1.5rem;border-radius:.8rem;margin-bottom:1.5rem;}
+.sec-banner h2{font-size:1.3rem;margin-bottom:.2rem;}
+.sec-banner p{font-size:.87rem;opacity:.88;}
+.concept-list{list-style:none;padding:0;}
+.concept-item{border:2px solid var(--border);border-radius:.7rem;margin-bottom:.6rem;overflow:hidden;}
+.concept-header{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1.1rem;cursor:pointer;background:#fff;transition:background .2s;font-weight:600;}
+.concept-header:hover{background:#f1f5f9;}
+.concept-header .arrow{transition:transform .25s;}
+.concept-body{display:none;padding:.75rem 1.1rem;background:#f8fafc;font-size:.9rem;line-height:1.7;}
+.concept-item.open .concept-body{display:block;}
+.concept-item.open .arrow{transform:rotate(180deg);}
+#score-display{text-align:center;padding:1.5rem;background:linear-gradient(135deg,#dbeafe,#ede9fe);border-radius:1rem;margin-top:1rem;display:none;}
+#score-display h3{font-size:1.4rem;color:var(--primary);margin-bottom:.4rem;}
+.scratch-ct-card{border-radius:.75rem;padding:.8rem;cursor:pointer;transition:transform .2s,box-shadow .2s;}
+.scratch-ct-card:hover{transform:translateY(-3px);}
+.scratch-detail{display:none;font-size:.78rem;line-height:1.6;margin-top:.5rem;}
+.scratch-opt{transition:all .2s;}
+@media(max-width:600px){header h1{font-size:1.4rem;}nav{justify-content:flex-start;}.ct-grid{grid-template-columns:1fr 1fr;}.domain-table{font-size:.75rem;}}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#x1F9E0; 運算思維與程式基礎</h1>
+  <p>適合大一非資訊領域學生｜互動式學習網頁</p>
+  <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+  <p style="font-size:.78rem;margin-top:.4rem;opacity:.7;" id="progress-text">學習進度：0 / 6 單元完成</p>
+</header>
+
+<nav>
+  <button class="active" onclick="showSection(0)">① 運算思維定義</button>
+  <button onclick="showSection(1)">② CT 四大元素</button>
+  <button onclick="showSection(2)">③ 程式基礎</button>
+  <button onclick="showSection(3)">④ Scratch 與 CT</button>
+  <button onclick="showSection(4)">⑤ 流程圖 &amp; 虛擬碼</button>
+  <button onclick="showSection(5)">⑥ 學習測驗</button>
+</nav>
+
+<main>
+<!-- ═══════════════════════════ SEC 0 ═══════════════════════════ -->
+<div class="section active" id="sec0">
+  <div class="sec-banner">
+    <h2>&#x1F50D; 什麼是運算思維？</h2>
+    <p>運算思維不只屬於資訊人，而是每個人都能學習、應用的解題方式。</p>
+  </div>
+  <div class="card">
+    <h2>&#x1F4D6; 學術定義</h2>
+    <div class="quote">"運算思維是利用<strong>電腦科學</strong>的基本概念進行<strong>問題解決、系統設計</strong>與人類行為理解的思維模式。"<br><small>— Wing, J. M. (2006). Communications of the ACM, 49(3), 33-35.</small></div>
+    <div class="quote">"運算思維讓我們能擁有<strong>電腦科學家</strong>面對問題時所持有的思維模式。"<br><small>— Grover &amp; Pea (2013). Educational Researcher, 42(1), 38–43.</small></div>
+  </div>
+  <div class="card cyan">
+    <h2>&#x1F310; Google 的定義</h2>
+    <p>Computational Thinking (CT) is a <strong>problem solving process</strong>.</p>
+    <p>CT 不只用於開發程式，也可應用於<strong>人文、數學、科學</strong>等各領域的問題解決。</p>
+  </div>
+  <div class="card amber">
+    <h2>&#x1F4BC; 為什麼非資訊科系也需要運算思維？</h2>
+    <ul>
+      <li><strong>科學與工程：</strong>利用運算模擬建築結構安全性、預測氣象</li>
+      <li><strong>人文與社會：</strong>分析廣告投放策略、人口老化與醫療資源分布</li>
+      <li><strong>藝術領域：</strong>構建三維動畫、創作數位音樂</li>
+    </ul>
+  </div>
+  <div class="card green">
+    <h2>&#x1F3AF; 小思考：你的領域如何用運算思維？</h2>
+    <p>請在下方輸入你的科系或興趣領域，想想看哪些問題可以用「拆解」或「步驟化」的方式解決：</p>
+    <textarea id="reflect-input" style="width:100%;min-height:80px;border:2px solid var(--border);border-radius:.6rem;padding:.6rem;font-size:.9rem;margin:.6rem 0;resize:vertical;" placeholder="例如：我讀社會學，可以把「分析社會現象」拆解成：蒐集資料 → 找出規律 → 建立解釋模型 → 預測趨勢…"></textarea>
+    <button class="btn-nav btn-primary" onclick="saveReflect()">&#x1F4BE; 儲存筆記</button>
+    <p id="reflect-save" style="color:var(--success);font-size:.85rem;margin-top:.4rem;display:none;">✅ 已儲存！繼續學習吧。</p>
+  </div>
+  <div style="display:flex;justify-content:flex-end;margin-top:1rem;">
+    <button class="btn-nav btn-primary" onclick="showSection(1)">下一單元 → CT 四大元素</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SEC 1 ═══════════════════════════ -->
+<div class="section" id="sec1">
+  <div class="sec-banner" style="background:linear-gradient(90deg,#0891b2,#0d9488)">
+    <h2>&#x2699;&#xFE0F; 運算思維的四大核心元素</h2>
+    <p>點擊卡片，展開說明與生活中的應用範例。</p>
+  </div>
+  <div class="ct-grid">
+    <div class="ct-card c1" onclick="toggleCT(this)"><div class="icon">🔪</div><h3>拆解問題<br><small>Decomposition</small></h3><p>將大問題分解成容易處理的小問題。<br>📌 <em>例：分析一首詩 → 韻律、意象、結構、語氣分開分析。</em></p></div>
+    <div class="ct-card c2" onclick="toggleCT(this)"><div class="icon">🔎</div><h3>辨識模式<br><small>Pattern Recognition</small></h3><p>在資料中找出規律、趨勢。<br>📌 <em>例：觀察每週消費記錄，發現週末花費特別多。</em></p></div>
+    <div class="ct-card c3" onclick="toggleCT(this)"><div class="icon">🌫️</div><h3>抽象化<br><small>Abstraction</small></h3><p>忽略不重要細節，找出關鍵規則。<br>📌 <em>例：設計地圖只保留路線，不畫出每棟建物外觀。</em></p></div>
+    <div class="ct-card c4" onclick="toggleCT(this)"><div class="icon">📋</div><h3>設計演算法<br><small>Algorithm Design</small></h3><p>制定可重複執行的解題步驟。<br>📌 <em>例：寫食譜就是一種演算法！</em></p></div>
+  </div>
+  <div class="card" style="margin-top:1.5rem;">
+    <h2>&#x1F5C2;&#xFE0F; CT 元素在各領域的應用</h2>
+    <p style="font-size:.83rem;color:var(--muted);margin-bottom:.6rem;">資料來源：Barr &amp; Stephenson (2011). ACM Inroads, 2, 48–54.</p>
+    <div style="overflow-x:auto;">
+    <table class="domain-table">
+      <tr><th>CT 元素</th><th>數學</th><th>科學</th><th>社會研究</th><th>語言藝術</th></tr>
+      <tr><td><span class="tag tag-purple">抽象化</span></td><td>使用代數變數、迭代解題</td><td>為物理實體建立模型</td><td>從事實中演繹結論</td><td>使用明喻與隱喻</td></tr>
+      <tr><td><span class="tag tag-blue">問題解析</span></td><td>用表示式表達運算順序</td><td>對物種進行分類</td><td>—</td><td>撰寫大綱</td></tr>
+      <tr><td><span class="tag tag-green">資料表示</span></td><td>長條圖、圓餅圖</td><td>從實驗資料做結論</td><td>總結並呈現趨勢</td><td>呈現不同句型樣式</td></tr>
+      <tr><td><span class="tag tag-amber">演算法思維</span></td><td>長除法、因數分解</td><td>進行實驗程序</td><td>—</td><td>撰寫操作說明</td></tr>
+    </table></div>
+  </div>
+  <div class="card amber">
+    <h2>&#x1F3CB;&#xFE0F; 排列練習：演算法的步驟順序</h2>
+    <p style="font-size:.88rem;color:var(--muted);margin-bottom:.7rem;">請拖曳下列步驟，排列出「泡一杯熱茶」的正確順序：</p>
+    <ul class="sort-list" id="sort-list">
+      <li class="sort-item" draggable="true" data-order="3">☕ <span>將茶包放入杯中</span></li>
+      <li class="sort-item" draggable="true" data-order="4">💧 <span>倒入熱水</span></li>
+      <li class="sort-item" draggable="true" data-order="1">🫙 <span>拿出茶杯和茶包</span></li>
+      <li class="sort-item" draggable="true" data-order="2">🔥 <span>燒開水</span></li>
+      <li class="sort-item" draggable="true" data-order="5">⏱️ <span>等待 3 分鐘後取出茶包</span></li>
+    </ul>
+    <button class="sort-check-btn" onclick="checkSort()">✅ 確認順序</button>
+    <div id="sort-result" style="margin-top:.7rem;font-size:.92rem;display:none;"></div>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-top:1rem;">
+    <button class="btn-nav btn-secondary" onclick="showSection(0)">← 上一單元</button>
+    <button class="btn-nav btn-primary"   onclick="showSection(2)">下一單元 → 程式基礎</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SEC 2 ═══════════════════════════ -->
+<div class="section" id="sec2">
+  <div class="sec-banner" style="background:linear-gradient(135deg,#7c3aed,#db2777)">
+    <h2>&#x1F4BB; 程式基礎概念</h2>
+    <p>電腦如何運作？程式的核心邏輯是什麼？</p>
+  </div>
+  <div class="card" style="border-left-color:#0ea5e9;">
+    <h2 style="color:#0ea5e9;">&#x1F5A5;&#xFE0F; 電腦基本架構</h2>
+    <p style="font-size:.88rem;color:var(--muted);margin-bottom:1rem;">電腦由輸入、處理、記憶體、儲存、輸出五大部件組成，各部件透過資料流相互協作。</p>
+    <div style="background:linear-gradient(145deg,#e0f2fe,#f0f9ff);border-radius:1rem;padding:1.4rem 1.2rem;">
+      <div style="text-align:center;font-size:1.05rem;font-weight:800;color:#0c4a6e;margin-bottom:1.2rem;">電腦基本結構</div>
+      <div style="display:flex;gap:.8rem;margin-bottom:.7rem;align-items:stretch;">
+        <div style="flex:1;background:linear-gradient(135deg,#059669,#0d9488);border-radius:.75rem;padding:.7rem 1rem;color:#fff;box-shadow:0 3px 10px rgba(5,150,105,.35);">
+          <div style="font-size:.85rem;font-weight:800;">&#x1F4BE; 暫存記憶體</div>
+          <div style="font-size:.73rem;opacity:.9;margin-top:.15rem;">Memory — 暫時存放執行中的資料</div>
+        </div>
+        <div style="display:flex;align-items:center;color:#f59e0b;font-size:1.2rem;font-weight:700;">⇄</div>
+        <div style="flex:1;background:linear-gradient(135deg,#d97706,#b45309);border-radius:.75rem;padding:.7rem 1rem;color:#fff;box-shadow:0 3px 10px rgba(217,119,6,.35);">
+          <div style="font-size:.85rem;font-weight:800;">&#x1F5C4;&#xFE0F; 永久儲存裝置</div>
+          <div style="font-size:.73rem;opacity:.9;margin-top:.15rem;">Storage — 硬碟、SSD 長期保存</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-start;padding-left:20%;margin-bottom:.3rem;">
+        <span style="color:#7c3aed;font-size:.9rem;letter-spacing:8px;">↕ ↕ ↕</span>
+      </div>
+      <div style="display:flex;gap:.8rem;align-items:stretch;">
+        <div style="flex:0 0 auto;background:linear-gradient(135deg,#16a34a,#15803d);border-radius:.75rem;padding:.7rem .9rem;color:#fff;box-shadow:0 3px 10px rgba(22,163,74,.3);min-width:88px;">
+          <div style="font-size:.82rem;font-weight:800;">⌨️ 輸入</div>
+          <div style="font-size:.72rem;opacity:.88;margin-top:.3rem;line-height:1.6;">鍵盤<br>滑鼠<br>掃描器</div>
+        </div>
+        <div style="display:flex;align-items:center;color:#3b82f6;font-size:1.3rem;">→</div>
+        <div style="flex:1;background:linear-gradient(145deg,#1e40af,#1d4ed8);border-radius:.9rem;padding:.8rem 1rem;box-shadow:0 4px 16px rgba(29,78,216,.4);border:2px solid #93c5fd;">
+          <div style="font-size:.68rem;color:#93c5fd;font-weight:700;margin-bottom:.5rem;">中央處理器 (CPU)</div>
+          <div style="background:linear-gradient(135deg,#0891b2,#0e7490);border-radius:.55rem;padding:.5rem .8rem;color:#fff;margin-bottom:.45rem;">
+            <div style="font-size:.8rem;font-weight:800;">&#x1F522; 算術邏輯單元</div>
+            <div style="font-size:.68rem;opacity:.88;">Arithmetic Logic Unit (ALU)</div>
+          </div>
+          <div style="border-top:1.5px dashed #93c5fd;margin:.3rem 0;opacity:.5;"></div>
+          <div style="background:linear-gradient(135deg,#4f46e5,#4338ca);border-radius:.55rem;padding:.5rem .8rem;color:#fff;">
+            <div style="font-size:.8rem;font-weight:800;">&#x1F39B;&#xFE0F; 控制單元</div>
+            <div style="font-size:.68rem;opacity:.88;">Control Unit</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;color:#3b82f6;font-size:1.3rem;">→</div>
+        <div style="flex:0 0 auto;background:linear-gradient(135deg,#0f766e,#0d9488);border-radius:.75rem;padding:.7rem .9rem;color:#fff;box-shadow:0 3px 10px rgba(15,118,110,.3);min-width:88px;">
+          <div style="font-size:.82rem;font-weight:800;">&#x1F5A5;&#xFE0F; 輸出</div>
+          <div style="font-size:.72rem;opacity:.88;margin-top:.3rem;line-height:1.6;">螢幕<br>印表機</div>
+        </div>
+      </div>
+      <div style="margin-top:1rem;display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;">
+        <span style="font-size:.72rem;background:#fff;border-radius:1rem;padding:.2rem .7rem;color:#1e40af;border:1px solid #bfdbfe;">→ 資料流向</span>
+        <span style="font-size:.72rem;background:#fff;border-radius:1rem;padding:.2rem .7rem;color:#7c3aed;border:1px solid #ddd6fe;">↕ 讀寫記憶體</span>
+        <span style="font-size:.72rem;background:#fff;border-radius:1rem;padding:.2rem .7rem;color:#b45309;border:1px solid #fde68a;">⇄ 資料存取</span>
+      </div>
+    </div>
+    <p style="font-size:.83rem;color:var(--muted);margin-top:.8rem;">💡 <strong>ALU</strong> 負責所有算術與邏輯運算；<strong>控制單元</strong>指揮各部件協調；<strong>Memory</strong> 是執行時的暫存空間；<strong>Storage</strong> 是關機後資料仍保留的地方。</p>
+  </div>
+  <div class="card cyan">
+    <h2>&#x1F522; 邏輯運算與布林值</h2>
+    <p>電腦只認識 <strong>True (1)</strong> 和 <strong>False (0)</strong>，所有判斷由三種運算組成：</p>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin:.8rem 0;">
+      <div style="background:#fff;border:2px solid #06b6d4;border-radius:.6rem;padding:.6rem 1rem;flex:1;min-width:120px;"><strong>AND（且）</strong><p style="font-size:.82rem;margin-top:.3rem;">兩個條件都為 True 結果才是 True</p></div>
+      <div style="background:#fff;border:2px solid #06b6d4;border-radius:.6rem;padding:.6rem 1rem;flex:1;min-width:120px;"><strong>OR（或）</strong><p style="font-size:.82rem;margin-top:.3rem;">只要一個條件為 True 結果就是 True</p></div>
+      <div style="background:#fff;border:2px solid #06b6d4;border-radius:.6rem;padding:.6rem 1rem;flex:1;min-width:120px;"><strong>NOT（非）</strong><p style="font-size:.82rem;margin-top:.3rem;">反轉真假：True 變 False，反之亦然</p></div>
+    </div>
+    <p style="font-size:.85rem;margin-bottom:.6rem;color:var(--muted)">💡 填入 1/0 或 True/False，點擊「計算」：</p>
+    <div class="bool-row"><input class="bool-input" id="b1" value="1" maxlength="5"><span class="bool-op">AND</span><input class="bool-input" id="b2" value="0" maxlength="5"><span>=</span><span class="bool-ans" id="b-and">?</span></div>
+    <div class="bool-row"><input class="bool-input" id="b3" value="0" maxlength="5"><span class="bool-op">OR</span><input class="bool-input" id="b4" value="1" maxlength="5"><span>=</span><span class="bool-ans" id="b-or">?</span></div>
+    <div class="bool-row"><span class="bool-op">NOT</span><input class="bool-input" id="b5" value="1" maxlength="5"><span>=</span><span class="bool-ans" id="b-not">?</span></div>
+    <button class="bool-check-btn" onclick="calcBool()">🔄 計算</button>
+  </div>
+  <div class="card amber">
+    <h2>&#x1F9E9; 物件導向程式設計 (OOP)</h2>
+    <p>整個系統由一個個<strong>物件 (Object)</strong> 組成，每個物件都有：</p>
+    <ul>
+      <li>📦 <strong>屬性 (Attribute)：</strong>靜態的特徵（顏色、大小、位置）</li>
+      <li>⚡ <strong>方法 (Method)：</strong>物件可執行的動作（移動、旋轉、說話）</li>
+    </ul>
+    <p style="margin-top:.7rem;">設計步驟：<strong>① 確認需要哪些物件 → ② 定義屬性與方法 → ③ 設計演算法</strong></p>
+  </div>
+  <div class="card green">
+    <h2>&#x1F501; 流程控制結構</h2>
+    <ul class="concept-list">
+      <li class="concept-item"><div class="concept-header" onclick="toggleConcept(this)"><span>📌 循序結構 (Sequences)</span><span class="arrow">▼</span></div><div class="concept-body">按照順序一步一步執行。<br><em>範例：開機 → 輸入密碼 → 開啟應用程式</em></div></li>
+      <li class="concept-item"><div class="concept-header" onclick="toggleConcept(this)"><span>🔄 重複結構 (Loops)</span><span class="arrow">▼</span></div><div class="concept-body">讓同一段程式重複執行，直到條件不成立。<br><em>範例：重複播放音樂，直到使用者按下停止</em></div></li>
+      <li class="concept-item"><div class="concept-header" onclick="toggleConcept(this)"><span>🤔 條件判斷 (Conditionals)</span><span class="arrow">▼</span></div><div class="concept-body">根據條件決定執行哪一段程式。<br><em>範例：如果分數 ≥ 60 → 顯示「及格」，否則「不及格」</em></div></li>
+      <li class="concept-item"><div class="concept-header" onclick="toggleConcept(this)"><span>⚡ 事件驅動 (Events)</span><span class="arrow">▼</span></div><div class="concept-body">某個事件發生時才觸發程式執行。<br><em>範例：當使用者按下按鈕 → 播放動畫</em></div></li>
+      <li class="concept-item"><div class="concept-header" onclick="toggleConcept(this)"><span>⏸️ 平行結構 (Parallelism)</span><span class="arrow">▼</span></div><div class="concept-body">讓多個程式同時執行。<br><em>範例：遊戲中角色移動的同時，背景音樂也在播放</em></div></li>
+    </ul>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-top:1rem;">
+    <button class="btn-nav btn-secondary" onclick="showSection(1)">← 上一單元</button>
+    <button class="btn-nav btn-primary"   onclick="showSection(3)">下一單元 → Scratch 與 CT</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SEC 3 ═══════════════════════════ -->
+<div class="section" id="sec3">
+  <div class="sec-banner" style="background:linear-gradient(90deg,#7c3aed,#db2777)">
+    <h2>&#x1F431; Computational Thinking with Scratch</h2>
+    <p>透過 Scratch 積木式程式設計，具體理解運算思維的八大概念。</p>
+  </div>
+  <div class="card">
+    <h2>&#x1F9E9; Scratch 設計思維</h2>
+    <p>Scratch 以「物件」為中心，每個<strong>角色 (Sprite)</strong> 與<strong>背景 (Stage)</strong> 都擁有獨立的程式、造型與音效，體現物件導向核心概念。</p>
+    <div style="display:flex;flex-wrap:wrap;gap:.7rem;margin:1rem 0;justify-content:center;">
+      <div style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border-radius:.75rem;padding:.7rem 1.1rem;text-align:center;min-width:130px;box-shadow:0 3px 10px rgba(245,158,11,.3);">
+        <div style="font-size:1.4rem;">🐱</div><strong style="font-size:.88rem;">角色 (Sprite)</strong>
+        <div style="font-size:.73rem;margin-top:.3rem;opacity:.9;">程式 ／ 造型 ／ 音效</div>
+      </div>
+      <div style="display:flex;align-items:center;color:#94a3b8;font-size:1.2rem;">+</div>
+      <div style="background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;border-radius:.75rem;padding:.7rem 1.1rem;text-align:center;min-width:130px;box-shadow:0 3px 10px rgba(8,145,178,.3);">
+        <div style="font-size:1.4rem;">🖼️</div><strong style="font-size:.88rem;">背景 (Stage)</strong>
+        <div style="font-size:.73rem;margin-top:.3rem;opacity:.9;">程式 ／ 造型 ／ 音效</div>
+      </div>
+      <div style="display:flex;align-items:center;color:#94a3b8;font-size:1.2rem;">→</div>
+      <div style="background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border-radius:.75rem;padding:.7rem 1.1rem;text-align:center;min-width:130px;box-shadow:0 3px 10px rgba(124,58,237,.3);">
+        <div style="font-size:1.4rem;">⚡</div><strong style="font-size:.88rem;">程式積木</strong>
+        <div style="font-size:.73rem;margin-top:.3rem;opacity:.9;">事件 ／ 動作 ／ 控制</div>
+      </div>
+    </div>
+    <p style="font-size:.85rem;color:var(--muted);">資料來源：陳婉凌 (2017)。積木式程式設計–使用Scratch。台北市：旗標。</p>
+  </div>
+  <div class="card cyan">
+    <h2>&#x1F5FA;&#xFE0F; Scratch CT 八大運算概念</h2>
+    <p style="font-size:.87rem;color:var(--muted);margin-bottom:.8rem;">點擊每個概念卡片，查看定義說明與 Scratch 積木範例。</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.7rem;">
+      <div class="scratch-ct-card" onclick="toggleScratchCard(this)" style="background:#fef3c7;border:2px solid #f59e0b;">
+        <div style="font-size:1.5rem;text-align:center;">📋</div>
+        <div style="font-weight:800;text-align:center;font-size:.88rem;margin:.3rem 0;color:#92400e;">Sequences<br><span style="font-size:.75rem;font-weight:400;">循序結構</span></div>
+        <div class="scratch-detail" style="color:#78350f;"><p style="font-size:.78rem;">按照順序逐步執行的指令串。</p><div style="background:#fff;border-radius:.4rem;padding:.4rem .5rem;margin-top:.4rem;font-family:monospace;font-size:.75rem;border:1px solid #fde68a;line-height:1.7;">🟡 移動 10 步<br>🟡 等待 0.2 秒<br>🟡 移動 10 步<br>🟡 說「我在寫程式！」</div></div>
+      </div>
+      <div class="scratch-ct-card" onclick="toggleScratchCard(this)" style="background:#dbeafe;border:2px solid #3b82f6;">
+        <div style="font-size:1.5rem;text-align:center;">🔄</div>
+        <div style="font-weight:800;text-align:center;font-size:.88rem;margin:.3rem 0;color:#1e40af;">Loops<br><span style="font-size:.75rem;font-weight:400;">重複結構</span></div>
+        <div class="scratch-detail" style="color:#1e3a8a;"><p style="font-size:.78rem;">讓同一段指令重複執行，避免重複撰寫。</p><div style="background:#fff;border-radius:.4rem;padding:.4rem .5rem;margin-top:.4rem;font-family:monospace;font-size:.75rem;border:1px solid #bfdbfe;line-height:1.7;">🔵 重複 4 次<br>&nbsp;&nbsp;🟡 移動 10 步<br>&nbsp;&nbsp;🟡 等待 0.2 秒<br>🔵 說「我在寫程式！」</div></div>
+      </div>
+      <div class="scratch-ct-card" onclick="toggleScratchCard(this)" style="background:#d1fae5;border:2px solid #10b981;">
+        <div style="font-size:1.5rem;text-align:center;">⚡⚡</div>
+        <div style="font-weight:800;text-align:center;font-size:.88rem;margin:.3rem 0;color:#065f46;">Parallelism<br><span style="font-size:.75rem;font-weight:400;">平行結構</span></div>
+        <div class="scratch-detail" style="color:#064e3b;"><p style="font-size:.78rem;">多段程式同時執行，讓角色同時做不同的事。</p><div style="background:#fff;border-radius:.4rem;padding:.4rem .5rem;margin-top:.4rem;font-family:monospace;font-size:.75rem;border:1px solid #a7f3d0;line-height:1.7;">🟢 當 🚩 點擊 → 移動<br>🟢 當 🚩 點擊 → 播放音樂<br><em style="opacity:.7;">（同時觸發）</em></div></div>
+      </div>
+      <div class="scratch-ct-card" onclick="toggleScratchCard(this)" style="background:#ede9fe;border:2px solid #8b5cf6;">
+        <div style="font-size:1.5rem;text-align:center;">🎯</div>
+        <div style="font-weight:800;text-align:center;font-size:.88rem;margin:.3rem 0;color:#5b21b6;">Events<br><span style="font-size:.75rem;font-weight:400;">事件驅動</span></div>
+        <div class="scratch-detail" style="color:#4c1d95;"><p style="font-size:.78rem;">某件事情發生時，觸發另一件事。</p><div style="background:#fff;border-radius:.4rem;padding:.4rem .5rem;margin-top:.4rem;font-family:monospace;font-size:.75rem;border:1px solid #ddd6fe;line-height:1.7;">🟣 當 🚩 被點擊<br>🟣 當角色被點擊<br>🟣 當背景換成…<br>🟣 當收到廣播訊息</div></div>
+      </div>
+      <div class="scratch-ct-card" onclick="toggleScratchCard(this)" style="background:#fee2e2;border:2px solid #ef4444;">
+        <div style="font-size:1.5rem;text-align:center;">🤔</div>
+        <div style="font-weight:800;text-align:center;font-size:.88rem;margin:.3rem 0;color:#991b1b;">Conditionals<br><span style="font-size:.75rem;font-weight:400;">條件判斷</span></div>
+        <div class="scratch-detail" style="color:#7f1d1d;"><p style="font-size:.78rem;">依條件決定要執行哪段程式（如果…就…否則…）。</p><div style="background:#fff;border-radius:.4rem;padding:.4rem .5rem;margin-top:.4rem;font-family:monospace;font-size:.75rem;border:1px solid #fca5a5;line-height:1.7;">🔴 如果 &lt;碰到邊緣&gt;<br>&nbsp;&nbsp;🟡 反彈<br>🔴 否則<br>&nbsp;&nbsp;🟡 移動 10 步</div></div>
+      </div>
+      <div class="scratch-ct-card" onclick="toggleScratchCard(this)" style="background:#fce7f3;border:2px solid #ec4899;">
+        <div style="font-size:1.5rem;text-align:center;">➕</div>
+        <div style="font-weight:800;text-align:center;font-size:.88rem;margin:.3rem 0;color:#831843;">Operators<br><span style="font-size:.75rem;font-weight:400;">運算子</span></div>
+        <div class="scratch-detail" style="color:#500724;"><p style="font-size:.78rem;">支援數學、邏輯與字串運算。</p><div style="background:#fff;border-radius:.4rem;padding:.4rem .5rem;margin-top:.4rem;font-family:monospace;font-size:.75rem;border:1px solid #fbcfe8;line-height:1.7;">🟢 算術：+ − × ÷<br>🟢 比較：&lt; = &gt;<br>🟢 邏輯：且 或 非<br>🟢 字串：組合 長度</div></div>
+      </div>
+      <div class="scratch-ct-card" onclick="toggleScratchCard(this)" style="background:#e0f2fe;border:2px solid #0284c7;">
+        <div style="font-size:1.5rem;text-align:center;">📦</div>
+        <div style="font-weight:800;text-align:center;font-size:.88rem;margin:.3rem 0;color:#0c4a6e;">Data<br><span style="font-size:.75rem;font-weight:400;">資料</span></div>
+        <div class="scratch-detail" style="color:#082f49;"><p style="font-size:.78rem;">用變數儲存單一數值；用清單儲存一組資料。</p><div style="background:#fff;border-radius:.4rem;padding:.4rem .5rem;margin-top:.4rem;font-family:monospace;font-size:.75rem;border:1px solid #bae6fd;line-height:1.7;">🔵 變數 score = 0<br>🔵 變數 name = "貓咪"<br>🔵 清單 scores = [90,85,78]</div></div>
+      </div>
+      <div class="scratch-ct-card" onclick="toggleScratchCard(this)" style="background:#f0fdf4;border:2px solid #16a34a;">
+        <div style="font-size:1.5rem;text-align:center;">🔧</div>
+        <div style="font-weight:800;text-align:center;font-size:.88rem;margin:.3rem 0;color:#14532d;">Functions<br><span style="font-size:.75rem;font-weight:400;">函數</span></div>
+        <div class="scratch-detail" style="color:#052e16;"><p style="font-size:.78rem;">可重複使用的程式片段，避免重複撰寫。</p><div style="background:#fff;border-radius:.4rem;padding:.4rem .5rem;margin-top:.4rem;font-family:monospace;font-size:.75rem;border:1px solid #bbf7d0;line-height:1.7;">🟩 定義「畫正多邊形」<br>&nbsp;&nbsp;🟡 移動 50 步<br>&nbsp;&nbsp;🟡 旋轉 360/邊數 度<br>🟩 呼叫「畫正多邊形」</div></div>
+      </div>
+    </div>
+    <p style="font-size:.78rem;color:var(--muted);margin-top:.8rem;text-align:center;">💡 點擊每張卡片可展開 Scratch 積木示意</p>
+  </div>
+  <div class="card amber">
+    <h2>&#x1F5C2;&#xFE0F; CT 四大元素 × Scratch 八大概念對應</h2>
+    <div style="overflow-x:auto;">
+    <table class="domain-table">
+      <tr><th>CT 核心元素</th><th>對應的 Scratch 概念</th><th>說明</th></tr>
+      <tr><td><span class="tag tag-purple">拆解問題</span></td><td>Sequences、Functions</td><td>把複雜動作拆成步驟；把重複步驟封裝成函數</td></tr>
+      <tr><td><span class="tag tag-blue">辨識模式</span></td><td>Loops、Parallelism</td><td>發現重複行為用迴圈取代；識別同時發生的事件</td></tr>
+      <tr><td><span class="tag tag-green">抽象化</span></td><td>Functions、Data</td><td>以函數封裝細節；以變數代表通用數值</td></tr>
+      <tr><td><span class="tag tag-amber">演算法設計</span></td><td>Events、Conditionals、Operators</td><td>設計事件觸發時機、判斷條件分支、組合運算邏輯</td></tr>
+    </table></div>
+  </div>
+  <div class="card green">
+    <h2>&#x1F3AE; Scratch CT 小挑戰</h2>
+    <p style="font-size:.9rem;margin-bottom:.8rem;">閱讀以下程式描述，判斷它用到了哪些 CT 概念（可複選）：</p>
+    <div style="background:#f0fdf4;border-radius:.75rem;padding:1rem 1.2rem;border:2px solid #86efac;margin-bottom:.9rem;font-size:.88rem;line-height:1.9;">
+      <strong>「貓咪程式」：</strong><br>
+      當 🚩 被點擊 → 設定 <em>score</em> 為 0<br>
+      重複直到 &lt;碰到邊緣&gt;：<br>
+      &nbsp;&nbsp;&nbsp;移動 10 步；如果 &lt;碰到老鼠&gt; 則 score = score + 1<br>
+      當角色被點擊 → 說出 score
+    </div>
+    <p style="font-size:.85rem;font-weight:700;margin-bottom:.5rem;">這段程式用到了哪些 Scratch CT 概念？</p>
+    <div id="scratch-challenge" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem;">
+      <button class="scratch-opt" onclick="toggleScratchOpt(this)" style="padding:.4rem .9rem;border:2px solid var(--border);border-radius:1rem;background:#fff;cursor:pointer;font-size:.83rem;">📋 Sequences</button>
+      <button class="scratch-opt" onclick="toggleScratchOpt(this)" style="padding:.4rem .9rem;border:2px solid var(--border);border-radius:1rem;background:#fff;cursor:pointer;font-size:.83rem;">🔄 Loops</button>
+      <button class="scratch-opt" onclick="toggleScratchOpt(this)" style="padding:.4rem .9rem;border:2px solid var(--border);border-radius:1rem;background:#fff;cursor:pointer;font-size:.83rem;">⚡⚡ Parallelism</button>
+      <button class="scratch-opt" onclick="toggleScratchOpt(this)" style="padding:.4rem .9rem;border:2px solid var(--border);border-radius:1rem;background:#fff;cursor:pointer;font-size:.83rem;">🎯 Events</button>
+      <button class="scratch-opt" onclick="toggleScratchOpt(this)" style="padding:.4rem .9rem;border:2px solid var(--border);border-radius:1rem;background:#fff;cursor:pointer;font-size:.83rem;">🤔 Conditionals</button>
+      <button class="scratch-opt" onclick="toggleScratchOpt(this)" style="padding:.4rem .9rem;border:2px solid var(--border);border-radius:1rem;background:#fff;cursor:pointer;font-size:.83rem;">➕ Operators</button>
+      <button class="scratch-opt" onclick="toggleScratchOpt(this)" style="padding:.4rem .9rem;border:2px solid var(--border);border-radius:1rem;background:#fff;cursor:pointer;font-size:.83rem;">📦 Data</button>
+      <button class="scratch-opt" onclick="toggleScratchOpt(this)" style="padding:.4rem .9rem;border:2px solid var(--border);border-radius:1rem;background:#fff;cursor:pointer;font-size:.83rem;">🔧 Functions</button>
+    </div>
+    <button onclick="checkScratchChallenge()" style="padding:.5rem 1.3rem;background:var(--success);color:#fff;border:none;border-radius:1rem;cursor:pointer;font-weight:700;font-size:.88rem;">✅ 確認答案</button>
+    <div id="scratch-challenge-result" style="display:none;margin-top:.7rem;padding:.7rem 1rem;border-radius:.6rem;font-size:.88rem;line-height:1.7;"></div>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-top:1rem;">
+    <button class="btn-nav btn-secondary" onclick="showSection(2)">← 上一單元</button>
+    <button class="btn-nav btn-primary"   onclick="showSection(4)">下一單元 → 流程圖 &amp; 虛擬碼</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SEC 4 ═══════════════════════════ -->
+<div class="section" id="sec4">
+  <div class="sec-banner" style="background:linear-gradient(90deg,#059669,#0d9488)">
+    <h2>&#x1F4D0; 演算法工具：流程圖 &amp; 虛擬碼</h2>
+    <p>用視覺化的方式表達解題步驟。</p>
+  </div>
+  <div class="card">
+    <h2>&#x1F5FA;&#xFE0F; 流程圖符號說明</h2>
+    <div style="overflow-x:auto;">
+    <table class="domain-table">
+      <tr><th>符號名稱</th><th>形狀說明</th><th>用途</th></tr>
+      <tr><td>🟣 程式開始/結束</td><td>橢圓形</td><td>流程的起點與終點</td></tr>
+      <tr><td>🟦 處理程序</td><td>矩形</td><td>執行計算或操作</td></tr>
+      <tr><td>🟨 條件判斷</td><td>菱形</td><td>依條件分支（是/否）</td></tr>
+      <tr><td>🟩 輸入/輸出</td><td>平行四邊形</td><td>接收輸入或產生輸出</td></tr>
+      <tr><td>➡️ 工作流向</td><td>箭頭</td><td>表示執行方向</td></tr>
+    </table></div>
+  </div>
+  <div class="card cyan">
+    <h2>&#x1F3D7;&#xFE0F; 互動流程圖：計算 1 到 N 的總和</h2>
+    <p style="font-size:.87rem;color:var(--muted);margin-bottom:.7rem;">點擊下方按鈕，按照正確步驟排列流程圖：</p>
+    <div class="flow-palette">
+      <button class="palette-item oval"          onclick="addFlowItem('開始','oval')">🟣 開始</button>
+      <button class="palette-item parallelogram" onclick="addFlowItem('輸入 N','input')">🟩 輸入 N</button>
+      <button class="palette-item rect"          onclick="addFlowItem('設 i=0, sum=0','rect')">🟦 設定初始值</button>
+      <button class="palette-item diamond"       onclick="addFlowItem('i > N ?','diamond')">🟨 判斷 i &gt; N ?</button>
+      <button class="palette-item rect"          onclick="addFlowItem('sum = sum + i','rect')">🟦 累加 sum</button>
+      <button class="palette-item rect"          onclick="addFlowItem('i = i + 1','rect')">🟦 i+1</button>
+      <button class="palette-item parallelogram" onclick="addFlowItem('輸出 sum','output')">🟩 輸出 sum</button>
+      <button class="palette-item oval"          onclick="addFlowItem('結束','oval')">🟣 結束</button>
+    </div>
+    <div id="flow-canvas"></div>
+    <div style="display:flex;gap:.6rem;margin-top:.5rem;">
+      <button class="bool-check-btn" style="background:var(--danger);" onclick="clearFlow()">🗑️ 清除</button>
+      <button class="bool-check-btn" onclick="checkFlow()">✅ 確認流程</button>
+    </div>
+    <div id="flow-result" style="margin-top:.6rem;font-size:.88rem;display:none;"></div>
+  </div>
+  <div class="card amber">
+    <h2>&#x1F4DD; 虛擬碼範例：累加演算法</h2>
+    <p style="font-size:.87rem;color:var(--muted);margin-bottom:.6rem;">閱讀後，在下方嘗試改寫為「計算平均值」的版本：</p>
+    <pre style="background:#1e293b;color:#e2e8f0;padding:1rem;border-radius:.7rem;font-size:.85rem;overflow-x:auto;line-height:1.8;">設定變數 i, sum, count
+設定初始值：i = 0; sum = 0; count = 0
+
+輸入任意數值，將其值給 count
+
+重覆執行，直到 i > count：
+  sum = sum + i
+  i = i + 1
+
+輸出 sum</pre>
+    <p style="font-size:.87rem;margin:.7rem 0 .4rem;">🖊️ 試試看：加上 average = sum / count 輸出平均值</p>
+    <textarea id="pseudo-area" placeholder="在這裡輸入你的虛擬碼…"></textarea>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-top:1rem;">
+    <button class="btn-nav btn-secondary" onclick="showSection(3)">← 上一單元</button>
+    <button class="btn-nav btn-primary"   onclick="showSection(5)">進入學習測驗 →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SEC 5 ═══════════════════════════ -->
+<div class="section" id="sec5">
+  <div class="sec-banner" style="background:linear-gradient(90deg,#b45309,#dc2626)">
+    <h2>&#x1F3AF; 學習測驗</h2>
+    <p>共 6 題，測試你對本單元的理解程度。</p>
+  </div>
+  <div class="card quiz-wrap" id="quiz-container">
+    <div class="question" id="q-text"></div>
+    <div class="options"  id="q-options"></div>
+    <div class="feedback" id="q-feedback"></div>
+    <div class="quiz-nav" id="q-nav"></div>
+  </div>
+  <div id="score-display">
+    <h3 id="score-title"></h3>
+    <p id="score-msg"></p>
+    <button class="btn-nav btn-primary" style="margin-top:1rem;" onclick="restartQuiz()">🔄 重新作答</button>
+  </div>
+  <div style="margin-top:1rem;">
+    <button class="btn-nav btn-secondary" onclick="showSection(4)">← 回上一單元</button>
+  </div>
+</div>
+</main>
+
+<script>
+const completed=new Set();
+function updateProgress(){
+  document.getElementById('progress-bar').style.width=(completed.size/6*100)+'%';
+  document.getElementById('progress-text').textContent='學習進度：'+completed.size+' / 6 單元完成';
+  document.querySelectorAll('nav button').forEach((t,i)=>{if(completed.has(i))t.classList.add('done');});
+}
+function showSection(idx){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec'+idx).classList.add('active');
+  document.querySelectorAll('nav button').forEach((t,i)=>t.classList.toggle('active',i===idx));
+  completed.add(idx); updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function saveReflect(){
+  if(document.getElementById('reflect-input').value.trim()){
+    const el=document.getElementById('reflect-save');
+    el.style.display='block'; setTimeout(()=>el.style.display='none',3000);
+  }
+}
+function toggleCT(el){el.classList.toggle('expanded');}
+function toggleConcept(header){
+  const item=header.parentElement;
+  document.querySelectorAll('.concept-item').forEach(i=>{if(i!==item)i.classList.remove('open');});
+  item.classList.toggle('open');
+}
+let dragSrc=null;
+function initDrag(){
+  document.querySelectorAll('.sort-item').forEach(item=>{
+    item.addEventListener('dragstart',()=>{dragSrc=item;item.style.opacity='.4';});
+    item.addEventListener('dragend',  ()=>{item.style.opacity='1';});
+    item.addEventListener('dragover', e=>e.preventDefault());
+    item.addEventListener('drop',e=>{
+      e.preventDefault();
+      if(dragSrc!==item){
+        const all=[...item.parentElement.querySelectorAll('.sort-item')];
+        if(all.indexOf(dragSrc)<all.indexOf(item)) item.parentElement.insertBefore(dragSrc,item.nextSibling);
+        else item.parentElement.insertBefore(dragSrc,item);
+      }
+    });
+  });
+}
+function checkSort(){
+  const orders=[...document.querySelectorAll('#sort-list .sort-item')].map(i=>+i.dataset.order);
+  const res=document.getElementById('sort-result'); res.style.display='block';
+  if(JSON.stringify(orders)==='[1,2,3,4,5]'){res.style.color='var(--success)';res.textContent='🎉 正確！這就是演算法的精神：步驟有順序，缺一不可。';}
+  else{res.style.color='var(--danger)';res.textContent='❌ 順序有誤，請再試試！提示：先準備材料，再加熱，最後沖泡。';}
+}
+function parseBool(v){v=v.trim().toLowerCase();if(v==='1'||v==='true')return true;if(v==='0'||v==='false')return false;return null;}
+function showBool(v){return v?'True (1)':'False (0)';}
+function calcBool(){
+  const b1=parseBool(document.getElementById('b1').value);
+  const b2=parseBool(document.getElementById('b2').value);
+  const b3=parseBool(document.getElementById('b3').value);
+  const b4=parseBool(document.getElementById('b4').value);
+  const b5=parseBool(document.getElementById('b5').value);
+  document.getElementById('b-and').textContent=(b1!==null&&b2!==null)?showBool(b1&&b2):'輸入錯誤';
+  document.getElementById('b-or').textContent =(b3!==null&&b4!==null)?showBool(b3||b4):'輸入錯誤';
+  document.getElementById('b-not').textContent=(b5!==null)?showBool(!b5):'輸入錯誤';
+}
+const flowOrder=[];
+const correctFlow=['開始','輸入 N','設 i=0, sum=0','i > N ?','sum = sum + i','i = i + 1','輸出 sum','結束'];
+const fColors={oval:'#ede9fe',rect:'#dbeafe',diamond:'#fef9c3',input:'#d1fae5',output:'#d1fae5'};
+const fBorders={oval:'#7c3aed',rect:'#3b82f6',diamond:'#eab308',input:'#10b981',output:'#10b981'};
+function addFlowItem(label,type){
+  const c=document.getElementById('flow-canvas');
+  flowOrder.push(label);
+  if(flowOrder.length>1){const a=document.createElement('div');a.style.cssText='display:flex;align-items:center;font-size:1.3rem;color:#94a3b8;';a.textContent='→';c.appendChild(a);}
+  const d=document.createElement('div');
+  d.style.cssText='background:'+(fColors[type]||'#f1f5f9')+';border:2px solid '+(fBorders[type]||'#94a3b8')+';border-radius:'+(type==='oval'?'2rem':'.4rem')+';padding:.4rem .8rem;font-size:.82rem;display:flex;align-items:center;white-space:nowrap;';
+  d.textContent=label; c.appendChild(d);
+  document.getElementById('flow-result').style.display='none';
+}
+function clearFlow(){flowOrder.length=0;document.getElementById('flow-canvas').innerHTML='';document.getElementById('flow-result').style.display='none';}
+function checkFlow(){
+  const res=document.getElementById('flow-result'); res.style.display='block';
+  if(JSON.stringify(flowOrder)===JSON.stringify(correctFlow)){res.style.color='var(--success)';res.textContent='🎉 正確！你成功畫出累加演算法的流程圖。';}
+  else if(flowOrder.length<correctFlow.length){res.style.color='var(--accent)';res.textContent='⚠️ 步驟不完整，共需 8 個步驟。';}
+  else{res.style.color='var(--danger)';res.textContent='❌ 順序有誤。提示：開始→輸入→初始化→判斷→計算→遞增→輸出→結束。';}
+}
+function toggleScratchCard(el){
+  const d=el.querySelector('.scratch-detail');
+  const open=d.style.display==='block';
+  document.querySelectorAll('.scratch-detail').forEach(x=>x.style.display='none');
+  document.querySelectorAll('.scratch-ct-card').forEach(x=>{x.style.transform='none';x.style.boxShadow='';});
+  if(!open){d.style.display='block';el.style.transform='translateY(-4px)';el.style.boxShadow='0 6px 20px rgba(0,0,0,.15)';}
+}
+function toggleScratchOpt(btn){
+  btn.classList.toggle('selected');
+  if(btn.classList.contains('selected')){btn.style.background='var(--success)';btn.style.color='#fff';btn.style.borderColor='var(--success)';}
+  else{btn.style.background='#fff';btn.style.color='var(--text)';btn.style.borderColor='var(--border)';}
+}
+function checkScratchChallenge(){
+  const correct=['Sequences','Loops','Events','Conditionals','Operators','Data'];
+  const sel=[...document.querySelectorAll('.scratch-opt.selected')].map(b=>b.textContent.trim().split(' ').pop());
+  const res=document.getElementById('scratch-challenge-result'); res.style.display='block';
+  const missed=correct.filter(c=>!sel.includes(c));
+  const extra=sel.filter(s=>!correct.includes(s));
+  if(!missed.length&&!extra.length){
+    res.style.background='#d1fae5';res.style.color='#065f46';
+    res.innerHTML='🎉 完全正確！<br>✅ <b>Sequences</b>（步驟順序）、<b>Loops</b>（重複直到）、<b>Events</b>（當點擊）、<b>Conditionals</b>（如果碰到）、<b>Operators</b>（score+1）、<b>Data</b>（score 變數）。';
+  }else{
+    res.style.background='#fef9c3';res.style.color='#92400e';
+    let msg='⚠️ 還差一點！<br>';
+    if(missed.length) msg+='漏選：'+missed.join('、')+'<br>';
+    if(extra.length)  msg+='多選了：'+extra.join('、')+'（此程式未使用）<br>';
+    msg+='<br><b>正確答案：</b>Sequences、Loops、Events、Conditionals、Operators、Data';
+    res.innerHTML=msg;
+  }
+}
+const quizData=[
+  {q:'1. 根據 Wing (2006) 的定義，運算思維的核心是？',
+   opts:['只適用於程式設計師的技術','利用電腦科學概念進行問題解決、系統設計與行為理解','讓電腦自動解決所有問題','使用特定程式語言撰寫程式'],
+   ans:1,explain:'✅ Wing (2006) 強調，運算思維是一種「思維模式」，適用於所有人，不限於資訊領域。'},
+  {q:'2. 下列哪個行為最符合「拆解問題 (Decomposition)」的概念？',
+   opts:['直接開始撰寫程式','把期末報告分成：找資料、整理架構、撰寫、修改四個步驟','記住所有解題公式','模仿別人的解法'],
+   ans:1,explain:'✅ 拆解問題就是把複雜的大任務，切割成多個可處理的小步驟。'},
+  {q:'3. 「1 AND 0」的布林運算結果是？',
+   opts:['True (1)','False (0)','不確定','兩個都是'],
+   ans:1,explain:'✅ AND 需要兩個條件都為 True 才輸出 True。1 AND 0 = False (0)。'},
+  {q:'4. 在 Scratch 中，「重複直到條件成立」屬於哪個 CT 概念？',
+   opts:['Events（事件驅動）','Parallelism（平行結構）','Loops（重複結構）','Functions（函數）'],
+   ans:2,explain:'✅ Loops（重複結構）讓同一段指令重複執行，直到條件成立為止。'},
+  {q:'5. 流程圖中，「菱形」符號代表什麼？',
+   opts:['程式的開始或結束','資料的輸入或輸出','條件判斷（是/否分支）','一般的處理程序'],
+   ans:2,explain:'✅ 菱形表示條件判斷，程式在此根據「是/否」走向不同的流程。'},
+  {q:'6. Scratch 中「自訂積木」對應哪個 CT 概念？',
+   opts:['Events','Data','Conditionals','Functions'],
+   ans:3,explain:'✅ Functions（函數）是可重複使用的程式片段；Scratch 的自訂積木就是函數的具體實現。'}
+];
+let currentQ=0,score=0,answered=false;
+function renderQuiz(){
+  const d=quizData[currentQ];
+  document.getElementById('q-text').textContent=d.q;
+  const opts=document.getElementById('q-options'); opts.innerHTML='';
+  d.opts.forEach((o,i)=>{const b=document.createElement('button');b.className='opt-btn';b.textContent=o;b.onclick=()=>answerQ(i,b);opts.appendChild(b);});
+  document.getElementById('q-feedback').className='feedback';
+  document.getElementById('q-feedback').textContent='';
+  answered=false; renderNav();
+}
+function answerQ(idx){
+  if(answered)return; answered=true;
+  const d=quizData[currentQ];
+  document.querySelectorAll('.opt-btn').forEach((b,i)=>{if(i===d.ans)b.classList.add('correct');if(i===idx&&i!==d.ans)b.classList.add('wrong');});
+  if(idx===d.ans)score++;
+  const fb=document.getElementById('q-feedback');fb.textContent=d.explain;fb.className='feedback show '+(idx===d.ans?'ok':'bad');
+  renderNav();
+}
+function renderNav(){
+  const nav=document.getElementById('q-nav'); nav.innerHTML='';
+  const p=document.createElement('span');p.style.cssText='color:var(--muted);font-size:.85rem;align-self:center;';
+  p.textContent='題目 '+(currentQ+1)+' / '+quizData.length; nav.appendChild(p);
+  if(answered){
+    if(currentQ<quizData.length-1){const nb=document.createElement('button');nb.className='btn-nav btn-primary';nb.textContent='下一題 →';nb.onclick=()=>{currentQ++;renderQuiz();};nav.appendChild(nb);}
+    else{const fb=document.createElement('button');fb.className='btn-nav btn-primary';fb.textContent='查看成績 🏆';fb.onclick=showScore;nav.appendChild(fb);}
+  }
+}
+function showScore(){
+  document.getElementById('quiz-container').style.display='none';
+  document.getElementById('score-display').style.display='block';
+  const pct=Math.round(score/quizData.length*100);
+  document.getElementById('score-title').textContent='🏆 你的成績：'+score+' / '+quizData.length+' 分（'+pct+'%）';
+  document.getElementById('score-msg').textContent=pct===100?'🎉 完美！你對本單元掌握得非常好！':pct>=80?'👍 非常棒！再複習一下錯題即可。':pct>=60?'📚 不錯！建議回頭複習 CT 四大元素與 Scratch 單元。':'💪 繼續加油！建議從第一單元重新學習。';
+  completed.add(5); updateProgress();
+}
+function restartQuiz(){
+  currentQ=0;score=0;answered=false;
+  document.getElementById('quiz-container').style.display='block';
+  document.getElementById('score-display').style.display='none';
+  renderQuiz();
+}
+document.addEventListener('DOMContentLoaded',()=>{renderQuiz();initDrag();updateProgress();});
+</script>
+</body>
+</html>
